@@ -1,6 +1,6 @@
-# Multer S3 Transform
+> This project is no longer being maintained. Originally a fork of [Multer S3](https://github.com/badunk/multer-s3) with the added [Transform](https://github.com/tehkaiyu/multer-s3#transforming-files-before-upload) property
 
-> This is a fork of [Multer S3](https://github.com/badunk/multer-s3), kept up to date, with the added [Transform](https://github.com/tehkaiyu/multer-s3#transforming-files-before-upload) property.
+# Multer S3 Transform
 
 Streaming multer storage engine for AWS S3.
 
