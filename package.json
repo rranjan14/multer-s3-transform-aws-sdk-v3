@@ -24,8 +24,8 @@
   "homepage": "https://github.com/tehkaiyu/multer-s3#readme",
   "dependencies": {
     "@aws-sdk/lib-storage": "^3.614.0",
-    "file-type": "^3.3.0",
-    "is-svg": "^2.1.0",
+    "file-type": "^19.1.1",
+    "is-svg": "^5.0.1",
     "run-parallel": "^1.1.6"
   },
   "devDependencies": {

@@ -1,11 +1,11 @@
-var crypto = require("crypto");
-var stream = require("stream");
-var fileType = require("file-type");
-var isSvg = require("is-svg");
-var parallel = require("run-parallel");
-var util = require("util");
-var Upload = require("@aws-sdk/lib-storage").Upload;
-var DeleteObjectCommand = require("@aws-sdk/client-s3").DeleteObjectCommand;
+import { randomBytes } from "crypto";
+import { PassThrough } from "stream";
+import {fileTypeFromBuffer} from "file-type";
+import isSvg from "is-svg";
+import parallel from "run-parallel";
+import { callbackify } from "util";
+import { Upload } from "@aws-sdk/lib-storage";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 function staticValue(value) {
   return function (req, file, cb) {
@@ -26,14 +26,14 @@ var defaultSSE = staticValue(null);
 var defaultSSEKMS = staticValue(null);
 
 function defaultKey(req, file, cb) {
-  crypto.randomBytes(16, function (err, raw) {
+  randomBytes(16, function (err, raw) {
     cb(err, err ? undefined : raw.toString("hex"));
   });
 }
 
 function autoContentType(req, file, cb) {
   file.stream.once("data", function (firstChunk) {
-    var type = fileType(firstChunk);
+    var type = fileTypeFromBuffer(firstChunk);
     var mime;
 
     if (type) {
@@ -44,7 +44,7 @@ function autoContentType(req, file, cb) {
       mime = "application/octet-stream";
     }
 
-    var outStream = new stream.PassThrough();
+    var outStream = new PassThrough();
 
     outStream.write(firstChunk);
     file.stream.pipe(outStream);
@@ -347,7 +347,7 @@ S3Storage.prototype.directUpload = function (opts, file, cb) {
     if (ev.total) currentSize = ev.total;
   });
 
-  util.callbackify(upload.done.bind(upload))(function (err, result) {
+  callbackify(upload.done.bind(upload))(function (err, result) {
     if (err) return cb(err);
 
     cb(null, {
@@ -405,7 +405,7 @@ S3Storage.prototype.transformUpload = function (opts, req, file, cb) {
             if (ev.total) currentSize = ev.total;
           });
 
-          util.callbackify(upload.done.bind(upload))(function (err, result) {
+          callbackify(upload.done.bind(upload))(function (err, result) {
             if (err) return cb(err);
 
             results.push({
@@ -444,9 +444,9 @@ S3Storage.prototype._removeFile = function (req, file, cb) {
   );
 };
 
-module.exports = function (opts) {
+export default function (opts) {
   return new S3Storage(opts);
 };
 
-module.exports.AUTO_CONTENT_TYPE = autoContentType;
-module.exports.DEFAULT_CONTENT_TYPE = defaultContentType;
+export const AUTO_CONTENT_TYPE = autoContentType;
+export const DEFAULT_CONTENT_TYPE = defaultContentType;
